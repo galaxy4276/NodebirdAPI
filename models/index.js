@@ -29,7 +29,5 @@ db.User.belongsToMany(db.User, {
   through: 'Follow',
 });
 
-console.log(db);
-
 module.exports = db;
 
