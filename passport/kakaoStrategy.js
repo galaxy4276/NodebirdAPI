@@ -1,12 +1,14 @@
-import KakaoStrategy from 'passport-kakao';
+const KakaoStrategy = require('passport-kakao').Strategy;
 
-const kakaoStgy = passport => {
+const { User } = require('../models');
+
+module.exports = (passport) => {
   passport.use(new KakaoStrategy({
-    clientID: process.env.KAKAO_KEY,
+    clientID: process.env.KAKAO_ID,
     callbackURL: '/auth/kakao/callback',
   }, async (accessToken, refreshToken, profile, done) => {
     try {
-      const exUser = await User.findOne({ where: { snsId: profile.id, provider: 'kakao' } });
+      const exUser = await User.find({ where: { snsId: profile.id, provider: 'kakao' } });
       if (exUser) {
         done(null, exUser);
       } else {
@@ -21,7 +23,6 @@ const kakaoStgy = passport => {
     } catch (error) {
       console.error(error);
       done(error);
-    }}))
+    }
+  }));
 };
-
-export default kakaoStgy;

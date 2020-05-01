@@ -4,12 +4,12 @@ const bcrypt = require('bcrypt');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { User } = require('../models');
 
-const authRouter = express.Router();
+const router = express.Router();
 
-authRouter.post('/join', isNotLoggedIn, async (req, res, next) => {
+router.post('/join', isNotLoggedIn, async (req, res, next) => {
   const { email, nick, password } = req.body;
   try {
-    const exUser = await User.findOne({ where: { email } });
+    const exUser = await User.find({ where: { email } });
     if (exUser) {
       req.flash('joinError', '이미 가입된 이메일입니다.');
       return res.redirect('/join');
@@ -27,7 +27,7 @@ authRouter.post('/join', isNotLoggedIn, async (req, res, next) => {
   }
 });
 
-authRouter.post('/login', isNotLoggedIn, (req, res, next) => {
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (authError, user, info) => {
     if (authError) {
       console.error(authError);
@@ -47,18 +47,18 @@ authRouter.post('/login', isNotLoggedIn, (req, res, next) => {
   })(req, res, next); // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.
 });
 
-authRouter.get('/logout', isLoggedIn, (req, res) => {
+router.get('/logout', isLoggedIn, (req, res) => {
   req.logout();
   req.session.destroy();
   res.redirect('/');
 });
 
-authRouter.get('/kakao', passport.authenticate('kakao'));
+router.get('/kakao', passport.authenticate('kakao'));
 
-authRouter.get('/kakao/callback', passport.authenticate('kakao', {
+router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
   res.redirect('/');
 });
 
-export default authRouter;
+module.exports = router;

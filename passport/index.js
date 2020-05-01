@@ -1,14 +1,14 @@
-import local from './localStrategy';
-import kakao from './kakaoStrategy';
-import { User } from '../models';
+const local = require('./localStrategy');
+const kakao = require('./kakaoStrategy');
+const { User } = require('../models');
 
-const passportSettings = passport => {
+module.exports = (passport) => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
   passport.deserializeUser((id, done) => {
-    User.findOne({ 
+    User.find({
       where: { id },
       include: [{
         model: User,
@@ -18,15 +18,12 @@ const passportSettings = passport => {
         model: User,
         attributes: ['id', 'nick'],
         as: 'Followings',
-      }], 
+      }],
     })
-      .then( user => done(null, user))
+      .then(user => done(null, user))
       .catch(err => done(err));
   });
 
-  local(passport); 
+  local(passport);
   kakao(passport);
 };
-
-
-export default passportSettings;
