@@ -12,6 +12,7 @@ const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 const authRouter = require('./routes/auth');
 const indexRouter = require('./routes');
+const v1 = require('./routes/v1');
 
 const app = express();
 sequelize.sync();
@@ -39,7 +40,7 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+app.use('/v1', v1);
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
 
@@ -54,6 +55,10 @@ app.use((err, req, res, next) => {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.use(() => {
+  console.log(req.decoded);
 });
 
 app.listen(app.get('port'), () => {

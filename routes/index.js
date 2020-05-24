@@ -1,5 +1,5 @@
 const express = require('express');
-const uuidv4 = require('uuid');
+const uuid = require('uuid');
 const { User, Domain } = require('../models');
 
 
@@ -24,11 +24,13 @@ router.get('/', (req, res, next) => {
 
 
 router.post('/domain', (req, res, next) => {
+  console.log('req.user.id', req.user);
+  console.log(uuid);
   Domain.create({
     userId: req.user.id,
     host: req.body.host,
     type: req.body.type,
-    clientSecret: uuidv4(),
+    clientSecret: uuid.v4(),
   })
     .then(() => {
       res.redirect('/');
